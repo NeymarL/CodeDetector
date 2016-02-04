@@ -213,7 +213,7 @@ class CodeDetector:
         result = ''
         for fun, value in match_fun_value1.items():
             jaccard = match_fun_value2[fun]
-            print value, '\t', jaccard
+            # print value, '\t', jaccard
             if value > 0.7 and value <= 0.8 and jaccard > 0.7:
                 result += fun + ' 和 ' + match_fun_name[fun] +\
                     '有可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (value * 100) + '\n'
@@ -223,7 +223,8 @@ class CodeDetector:
             elif value > 0.9 and value <= 1.0 and jaccard > 0.9:
                 result += '函数' + fun + ' 和函数 ' + match_fun_name[fun] +\
                     '有极大可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (value * 100) + '\n'
-        print result
+        if not result:
+            result = '这两个文件相似度较低，不太像复制的'
         return result
 
     def test(self):
