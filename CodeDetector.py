@@ -69,6 +69,9 @@ class CodeDetector:
                 if not fun_name:
                     result = re.search(
                         r'(\w+)\((.|\n)*\)', self.files[index][start:i])
+                    if not result:
+                        i = i + 1
+                        continue
                     end = result.group().find('(')
                     fun_name = result.group()[0: end]
             elif self.files[index][i] == '}':
@@ -219,22 +222,22 @@ class CodeDetector:
             jaccard = match_fun_value2[fun]
             avarage = (value + jaccard) / 2.0
             if value > 0.7 and value <= 0.8 and jaccard > 0.7:
-                result += fun + ' 和 ' + match_fun_name[fun] +\
-                    '有可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (avarage * 100) + '\n'
-                score += avarage
-            elif value > 0.8 and value <= 0.9 and jaccard > 0.8:
-                result += '函数 %s 和函数 %s 有 %.2f%% 的可能性是抄袭的！' % (fun, match_fun_name[
-                    fun], avarage * 100)
-                score += avarage
-            elif value > 0.9 and value <= 1.0 and jaccard > 0.9:
-                result += '函数' + fun + ' 和函数 ' + match_fun_name[fun] +\
-                    '有极大可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (avarage * 100) + '\n'
-                score += avarage
+                result += '文件1的' + fun + ' 和文件2的 ' + match_fun_name[fun] +\
+                    '有可能存在复制关系哦! 它们的相似度为 : %.2f%%\t%.2f\n' % (
+                        avarage * 100, avarage * 100)
+            elif value > 0.8 and value <= 0.9 and jaccard > 0.7:
+                result += '文件1的函数 %s 和文件2的函数 %s 有 %.2f%% 的可能性是抄袭的！\t%.2f\n' % (fun, match_fun_name[
+                    fun], avarage * 100, avarage * 100)
+            elif value > 0.9 and value <= 1.0 and jaccard > 0.7:
+                result += '文件1的函数 ' + fun + ' 和文件2的函数 ' + match_fun_name[fun] +\
+                    ' 有极大可能存在复制关系哦! 它们的相似度为 : %.2f%%\t%.2f\n' % (
+                        avarage * 100, avarage * 100)
+            score += avarage
             cnt = cnt + 1
         if not result:
-            result = '这两个文件相似度较低，不太像复制的'
+            result = '这两个文件相似度较低，不太像复制的\t%.2f' % (score * 100.0 / cnt)
         self.__init__()  # 重新初始化
-        return result
+        return result.rstrip()
 
     def test(self):
         f1 = open('test1.c', 'r')
@@ -245,7 +248,7 @@ class CodeDetector:
         f2.close()
         self.add_file(0, content1)
         self.add_file(1, content2)
-        self.run()
+        print self.run()
 
 
 if __name__ == '__main__':

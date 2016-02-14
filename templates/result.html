@@ -11,46 +11,81 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="在线C语言代码复制/相似度检测平台" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<style>
+.btn{
+    width:25%;
+    background-color: #0259A0;
+    border: none;
+    padding: 11px 9px 11px 9px;
+    border-radius: 3px;
+    color: #FFF;
+    font-family: calibri;
+    font-size:18px;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    margin-left: 50%; 
+}
+</style>
 
 </head>
 <body>
-
-{{result}}
-
-<div class="area_chart_left">
-    <div class="area_chart_left_main">
-        <div class="area_chart_left_l">
-            <h3>PIE CHART</h3>
-        </div>
-        <div class="area_chart_left_r">
-            <ul>
-                <li class="lab1">Label 1</li>
-                <li class="lab2">Label 2</li>
-                <li class="lab3">Label 3</li>
-            </ul>
-        </div>
-        <div class="clear"> </div>
+<div class="main">
+    <h1>检测结果</h1>
+    <div class="line_chart stack_bar">
+            <div class="line_left">
+                <h3>{{summary}}</h3>
+            </div>
+            <div class="clear"> </div>
     </div>
-    <canvas id="pie" height="300" width="500" style="width: 500px; height: 300px;"></canvas>
-     <script>
-        var pieData = [
-                {
-                    value: 30,
-                    color:"#e5e8eb"
-                },
-                {
-                    value : 50,
-                    color : "#5dd0fb"
-                },
-                {
-                    value : 100,
-                    color : "#2bbfba"
-                }
-            
-            ];
-            new Chart(document.getElementById("pie").getContext("2d")).Pie(pieData);
-    </script>
+    <div class="area_chart">
+        {% for row in rows %}
+            {% if loop.index % 2 == 1 %}
+                <div class="area_chart_left">
+            {% else %}
+                <div class="area_chart_right">
+            {% endif %}
+                <div class="area_chart_left_main">
+                    <div class="area_chart_left_l">
+                        <h3>{{ row.split('\t')[0] }}</h3>
+                    </div>
+                    <div class="area_chart_left_r">
+                        <ul>
+                            <li class="lab1">{{ row.split('\t')[1] }}</li>
+                        </ul>
+                    </div>
+                    <div class="clear"> </div>
+                </div>
+                <canvas id="pie{{loop.index}}" height="300" width="500" style="width: 500px; height: 300px;"></canvas>
+                 <script>
+                    var pieData = [
+                            {
+                                value: 100-{{ row.split('\t')[1] }},
+                                color:"#e5e8eb"
+                            },
+                            
+                            {
+                                value : {{ row.split('\t')[1] }},
+                                color : "#2bbfba"
+                            }
+                        
+                        ];
+                        new Chart(document.getElementById("pie{{loop.index}}").getContext("2d")).Pie(pieData);
+                </script>
+            </div>
+            {% if loop.index % 2 == 0 %}
+                <div class="clear"> </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+
 </div>
+
+    <div class="clear"></div>
+<br><br>
+<a class="btn" href="/">返回首页</a>
 
 </body>
 </html>

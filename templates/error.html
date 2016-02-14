@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-head>
+<head>
 <title>在线C语言代码复制/相似度检测平台</title>
 <!-- Custom Theme files -->
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" media="all" />
@@ -11,10 +11,32 @@ head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="在线C语言代码复制/相似度检测平台" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<style>
+a{
+    width:25%;
+    background-color: #0259A0;
+    border: none;
+    padding: 11px 9px 11px 9px;
+    border-radius: 3px;
+    color: #FFF;
+    font-family: calibri;
+    font-size:18px;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+</style>
 
 </head>
 <body>
 
+<h1>{{message}}</h1>
+<div class="clear"> </div>
+<br><br>
+
+<div class="button">
+<a href="/">重新上传</a>
+</div>
 </body>
 
 </html>

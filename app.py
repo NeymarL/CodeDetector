@@ -44,8 +44,16 @@ def run():
     try:
         result = cd.run()
     except ValueError, e:
-        return str(e)
-    return render_template('result.html', result=result)
+        return render_template('error.html', message='文件为空或文件格式错误！只能上传.c格式文件!')
+    rows = result.split('\n')
+    score = 0
+    cnt = 0
+    for row in rows:
+        score += float(row.split('\t')[1])
+        cnt = cnt + 1
+    avg = score * 1.0 / cnt
+    summary = '两个文件的整体相似度为 %.2f%%' % (avg)
+    return render_template('result.html', summary=summary, rows=rows)
 
 
 if __name__ == '__main__':
