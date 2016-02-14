@@ -9,10 +9,11 @@ from flask import Flask
 from flask import render_template, request
 import CodeDetector
 
-ALLOWED_EXTENSIONS = set(['txt', 'c'])
+ALLOWED_EXTENSIONS = set(['c'])
 
 app = Flask(__name__)
 cd = CodeDetector.CodeDetector()
+index = 0
 
 
 def allowed_file(filename):
@@ -22,32 +23,29 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def home():
+    global index
+    index = 0
     return render_template('index.html')
 
 
-@app.route('/upload_file/<int:index>', methods=['POST'])
-def upload_file(index):
-    file = request.files['file']
-    print 'File : ' + file.read()
-    if file and allowed_file(file.filename) and index >= 0 and index <= 1:
-        cd.add_file(index, file.stream.read())
-        return "Upload Success!"
-    return 'Upload Failed!'
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    global index
+    file = request.files['upl']
+    if file and allowed_file(file.filename) and index < 2:
+        cd.add_file(index, file.read())
+        index = index + 1
 
 
-@app.route('/run', methods=['POST'])
+@app.route('/run', methods=['GET'])
 def run():
-    files = ['', '']
-    files[0] = request.files['file1']
-    files[1] = request.files['file2']
-    for i in range(2):
-        if files[i] and allowed_file(files[i].filename):
-            # print files[i].stream.read()
-            cd.add_file(i, files[i].read())
-        else:
-            return 'File Type Error'
-    result = cd.run()
-    return result
+    global index
+    index = 0
+    try:
+        result = cd.run()
+    except ValueError, e:
+        return str(e)
+    return render_template('result.html', result=result)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,9 @@ class CodeDetector:
         self.shingle_sets = [set(), set()]  # 存储shingles集合
         # 存储token集合, key : function name  value : token set
         self.token_sets = [{}, {}]
+        # 存储token字符串, key : function name  value : token string
         self.token_strs = [{}, {}]
+        # 存储函数内容 , key : function   value : content
         self.funs_of_file = [{}, {}]
 
     def add_file(self, index, content):
@@ -209,22 +211,29 @@ class CodeDetector:
                     match_fun_value2[name1] = self.jaccard(self.token_sets[0][name1],
                                                            self.token_sets[1][name2])
                     match_fun_name[name1] = name2
-        # 生产分析文档
+        # 生成分析文档
         result = ''
+        score = 0
+        cnt = 0
         for fun, value in match_fun_value1.items():
             jaccard = match_fun_value2[fun]
-            # print value, '\t', jaccard
+            avarage = (value + jaccard) / 2.0
             if value > 0.7 and value <= 0.8 and jaccard > 0.7:
                 result += fun + ' 和 ' + match_fun_name[fun] +\
-                    '有可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (value * 100) + '\n'
+                    '有可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (avarage * 100) + '\n'
+                score += avarage
             elif value > 0.8 and value <= 0.9 and jaccard > 0.8:
                 result += '函数 %s 和函数 %s 有 %.2f%% 的可能性是抄袭的！' % (fun, match_fun_name[
-                    fun], value * 100)
+                    fun], avarage * 100)
+                score += avarage
             elif value > 0.9 and value <= 1.0 and jaccard > 0.9:
                 result += '函数' + fun + ' 和函数 ' + match_fun_name[fun] +\
-                    '有极大可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (value * 100) + '\n'
+                    '有极大可能存在复制关系哦! 它们的相似度为 : %.2f%%' % (avarage * 100) + '\n'
+                score += avarage
+            cnt = cnt + 1
         if not result:
             result = '这两个文件相似度较低，不太像复制的'
+        self.__init__()  # 重新初始化
         return result
 
     def test(self):
